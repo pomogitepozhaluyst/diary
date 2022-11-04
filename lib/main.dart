@@ -1,8 +1,10 @@
-import 'package:diary/lists/StartApp.dart';
+import 'package:diary/lists/task_branch.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MaterialApp(
-    home: StartApp(),
-  ));
+  runApp(
+    const MaterialApp(
+      home: TaskBranch(),
+    ),
+  );
 }
