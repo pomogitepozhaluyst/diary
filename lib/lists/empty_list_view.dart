@@ -1,15 +1,12 @@
+import 'package:diary/lists/resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class EmptyList extends StatefulWidget {
+class EmptyList extends StatelessWidget {
   const EmptyList({
     super.key,
   });
-  @override
-  EmptyListState createState() => EmptyListState();
-}
 
-class EmptyListState extends State<EmptyList> {
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -20,10 +17,10 @@ class EmptyListState extends State<EmptyList> {
             alignment: AlignmentDirectional.center,
             children: [
               SvgPicture.asset(
-                'assets/todolist_background.svg',
+                Resources.backgroundEmptyList1,
               ),
               SvgPicture.asset(
-                'assets/todolist.svg',
+                Resources.backgroundEmptyList2,
               ),
             ],
           ),

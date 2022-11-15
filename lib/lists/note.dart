@@ -1,13 +1,13 @@
-import 'package:uuid/uuid.dart';
-
 class Note {
-  final id = const Uuid().v4();
-  String title = '';
-  bool isFavorite = false;
-  bool isCompleted = false;
+  String id;
+  String title;
+  bool isFavorite;
+  bool isCompleted;
 
-  Note(
-      {required this.title,
-      required this.isFavorite,
-      required this.isCompleted});
+  Note({
+    required this.title,
+    required this.isFavorite,
+    required this.isCompleted,
+    required this.id,
+  });
 }

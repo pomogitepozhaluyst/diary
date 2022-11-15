@@ -1,66 +1,68 @@
+import 'package:diary/lists/pop_up_item_data.dart';
 import 'package:diary/lists/pop_up_menu.dart';
-import 'package:diary/lists/variables.dart';
 import 'package:flutter/material.dart';
 
-class AppBarView extends StatefulWidget with Variable implements PreferredSizeWidget {
-  final Function(String)? submitEditVector;
-  final Function? updateDisplayListByConditions;
-  final Function? deleteCompleted;
-  final Function? hideCompleted;
-  final Function? onlyFavorites;
-  final Function? editVector;
-  AppBarView({
+class AppBarView extends StatelessWidget implements PreferredSizeWidget {
+  final void Function() deleteCompleted;
+  final void Function() hideCompleted;
+  final void Function() onlyFavorites;
+  final void Function() editMainTitle;
+
+  final bool isCompletedHidden;
+  final bool isOnlyFavoriteShown;
+
+  final String branchTitle;
+
+  const AppBarView({
     super.key,
-    required this.submitEditVector,
-    required this.updateDisplayListByConditions,
     required this.deleteCompleted,
     required this.hideCompleted,
     required this.onlyFavorites,
-    required this.editVector,
+    required this.isCompletedHidden,
+    required this.isOnlyFavoriteShown,
+    required this.branchTitle,
+    required this.editMainTitle,
   });
+
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-  @override
-  AppBarViewState createState() => AppBarViewState();
-}
 
-class AppBarViewState extends State<AppBarView> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(Variable.mainTitle),
+      title: Text(branchTitle),
       centerTitle: true,
       backgroundColor: Colors.deepOrange,
       actions: [
-        PopupMenuButton<PopUp>(
-          onSelected: (item) => item.onClicked!(),
+        PopupMenuButton<PopupMenuItemData>(
+          onSelected: (item) => item.onClicked(),
           itemBuilder: (context) => [
-            createItem(
-              PopUp(
-                title: Variable.isCompletedHide ? 'Показать выполненные' : 'Скрыть выполненные',
-                icon: Variable.isCompletedHide ? Icons.check_circle_outline : Icons.check_circle,
-                onClicked: widget.hideCompleted,
+            PopUp(
+              data: PopupMenuItemData(
+                title: isCompletedHidden ? 'Показать выполненные' : 'Скрыть выполненные',
+                icon: isCompletedHidden ? Icons.check_circle_outline : Icons.check_circle,
+                onClicked: hideCompleted,
               ),
             ),
-            createItem(
-              PopUp(
-                title: Variable.isOnlyFavoriteShown ? 'Все задачи' : 'Только Избранные',
-                icon: Variable.isOnlyFavoriteShown ? Icons.star_outline : Icons.star,
-                onClicked: widget.onlyFavorites,
+            PopUp(
+              data: PopupMenuItemData(
+                title: isOnlyFavoriteShown ? 'Все задачи' : 'Только Избранные',
+                icon: isOnlyFavoriteShown ? Icons.star_outline : Icons.star,
+                onClicked: onlyFavorites,
               ),
             ),
-            createItem(
-              PopUp(
+            PopUp(
+              data: PopupMenuItemData(
                 title: 'Удалить выполненные',
                 icon: Icons.delete_outline,
-                onClicked: widget.deleteCompleted,
+                onClicked: deleteCompleted,
               ),
             ),
-            createItem(
-              PopUp(
+            PopUp(
+              data: PopupMenuItemData(
                 title: 'Редактировать ветку',
                 icon: Icons.edit_outlined,
-                onClicked: widget.editVector,
+                onClicked: editMainTitle,
               ),
             ),
           ],

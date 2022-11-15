@@ -1,157 +1,169 @@
 import 'package:diary/lists/app_bar.dart';
-import 'package:diary/lists/empty_list_view.dart';
 import 'package:diary/lists/input_window.dart';
+import 'package:diary/lists/list_notes.dart';
 import 'package:diary/lists/note.dart';
-import 'package:diary/lists/note_card_view.dart';
 import 'package:diary/lists/text_window.dart';
-import 'package:diary/lists/variables.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
-class TaskBranch extends StatefulWidget {
-  const TaskBranch({Key? key}) : super(key: key);
+class TaskBranchScreen extends StatefulWidget {
+  const TaskBranchScreen({super.key});
 
   @override
-  State<TaskBranch> createState() => _TaskBranchState();
+  TaskBranchScreenState createState() => TaskBranchScreenState();
 }
 
-class _TaskBranchState extends State<TaskBranch> with Variable {
+class TaskBranchScreenState extends State<TaskBranchScreen> {
+  late List<Note> notes;
+  late List<Note> showNotes;
+
+  late bool isOnlyFavoriteShown;
+  late bool isCompletedHidden;
+
+  late String branchTitle;
+
+  @override
+  void initState() {
+    super.initState();
+    branchTitle = "Учеба";
+    isOnlyFavoriteShown = false;
+    isCompletedHidden = false;
+    notes = [];
+    showNotes = [];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.deepPurple,
       appBar: AppBarView(
-        updateDisplayListByConditions: updateDisplayListByConditions,
-        deleteCompleted: confirmDeleteCompleted,
-        submitEditVector: submitEditVector,
-        hideCompleted: hideCompleted,
-        onlyFavorites: onlyFavorites,
-        editVector: editVector,
+        isOnlyFavoriteShown: isOnlyFavoriteShown,
+        isCompletedHidden: isCompletedHidden,
+        branchTitle: branchTitle,
+        deleteCompleted: _showDeleteCompletedConfirmationDialog,
+        hideCompleted: _hideCompleted,
+        onlyFavorites: _onlyFavorites,
+        editMainTitle: _editBranchTitle,
       ),
-      body: Variable.displayedListView.isEmpty
-          ? const EmptyList()
-          : Container(
-              margin: const EdgeInsets.symmetric(horizontal: 5.0),
-              child: ListView.builder(
-                itemCount: Variable.displayedListView.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return NoteCardView(
-                    key2: Variable.displayedListView[index].id,
-                    updateDisplayListByConditions: updateDisplayListByConditions,
-                  );
-                },
-              ),
-            ),
-      floatingActionButton: buttonCallWindowAddNote(),
+      body: ListNotes(
+        notes: notes,
+        showNotes: showNotes,
+        setCompleted: _setCompleted,
+        setFavorite: _setFavorite,
+        dismissCard: _dismissCard,
+      ),
+      floatingActionButton: _buildFab(context),
     );
   }
 
-  FloatingActionButton buttonCallWindowAddNote() {
+  Widget _buildFab(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
-        callWindowAddNote();
+        _showAddNoteDialog(context);
       },
       backgroundColor: Colors.deepOrange,
-      child: const Text(
-        '+',
-        style: TextStyle(
-          color: Colors.deepPurple,
-          fontSize: 30,
-        ),
-      ),
+      child: const Icon(Icons.add),
     );
   }
 
-  void confirmDeleteCompleted() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return TextWindow(
-          title: 'Подтвердите удаление',
-          text: 'Удалить выполненные задачи? Это действие необратимо.',
-          submit: deleteCompleted,
-        );
-      },
-    );
-  }
-
-  void callWindowAddNote() {
+  void _showAddNoteDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return InputWindow(
           title: 'Создать задачу',
           hintText: 'Введите название задачи',
-          submit: submit,
+          submit: _submitAddNote,
         );
       },
     );
   }
 
-  void deleteCompleted() {
-    Variable.listView.removeWhere((note) => note.isCompleted);
-    updateDisplayListByConditions();
-  }
-
-  void updateDisplayListByConditions() {
-    Variable.displayedListView = Variable.listView;
-    setState(
-      () => {
-        if (Variable.isOnlyFavoriteShown)
-          {
-            Variable.displayedListView = Variable.displayedListView.where((element) => element.isFavorite).toList(),
-          },
-        if (Variable.isCompletedHide)
-          {
-            Variable.displayedListView = Variable.displayedListView.where((element) => !element.isCompleted).toList(),
-          }
-      },
+  void _submitAddNote(String nameNote) {
+    notes.add(
+      Note(
+        title: nameNote,
+        isFavorite: false,
+        isCompleted: false,
+        id: const Uuid().v4(),
+      ),
     );
+    _updateDisplayListByConditions();
   }
 
-  void editVector() {
+  void _hideCompleted() {
+    isCompletedHidden = !isCompletedHidden;
+    _updateDisplayListByConditions();
+  }
+
+  void _onlyFavorites() {
+    isOnlyFavoriteShown = !isOnlyFavoriteShown;
+    _updateDisplayListByConditions();
+  }
+
+  void _deleteCompleted() {
+    notes.removeWhere((note) => note.isCompleted);
+    _updateDisplayListByConditions();
+  }
+
+  void _updateDisplayListByConditions() {
+    showNotes = notes;
+    setState(() {
+      if (isOnlyFavoriteShown && isCompletedHidden) {
+        showNotes = showNotes.where((element) => (element.isFavorite && !element.isCompleted)).toList();
+      } else if (isOnlyFavoriteShown) {
+        showNotes = showNotes.where((element) => element.isFavorite).toList();
+      } else if (isCompletedHidden) {
+        showNotes = showNotes.where((element) => !element.isCompleted).toList();
+      }
+    });
+  }
+
+  void _editBranchTitle() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return InputWindow(
           title: 'Редактировать ветку',
           hintText: 'Введите название ветки',
-          submit: submitEditVector,
-          userInput: Variable.mainTitle,
+          submit: _submitEditBranchTitle,
+          startInput: branchTitle,
         );
       },
     );
   }
 
-  void submitEditVector(String userInput) {
-    setState(
-      () {
-        Variable.mainTitle = userInput;
-      },
-    );
+  void _submitEditBranchTitle(String newMainTitle) {
+    setState(() {
+      branchTitle = newMainTitle;
+    });
   }
 
-  void hideCompleted() {
-    Variable.isCompletedHide = !Variable.isCompletedHide;
-    updateDisplayListByConditions();
-  }
-
-  void onlyFavorites() {
-    Variable.isOnlyFavoriteShown = !Variable.isOnlyFavoriteShown;
-    updateDisplayListByConditions();
-  }
-
-  void submit(String userInput) {
-    setState(
-      () {
-        Variable.listView.add(
-          Note(
-            title: userInput,
-            isFavorite: false,
-            isCompleted: false,
-          ),
+  void _showDeleteCompletedConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return TextWindow(
+          title: 'Подтвердите удаление',
+          text: 'Удалить выполненные задачи? Это действие необратимо.',
+          submit: _deleteCompleted,
         );
-        updateDisplayListByConditions();
       },
     );
+  }
+
+  void _setFavorite(Note thisNote) {
+    thisNote.isFavorite = !thisNote.isFavorite;
+    _updateDisplayListByConditions();
+  }
+
+  void _setCompleted(Note thisNote) {
+    thisNote.isCompleted = !thisNote.isCompleted;
+    _updateDisplayListByConditions();
+  }
+
+  void _dismissCard(Note thisNote) {
+    notes.removeWhere((element) => element.id == thisNote.id);
+    _updateDisplayListByConditions();
   }
 }

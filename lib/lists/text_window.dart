@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
-class TextWindow extends StatefulWidget {
+class TextWindow extends StatelessWidget {
   final String title;
   final String text;
-  final Function()? submit;
+  final Function() submit;
+
   const TextWindow({
     super.key,
     required this.title,
@@ -12,15 +13,10 @@ class TextWindow extends StatefulWidget {
   });
 
   @override
-  TextWindowState createState() => TextWindowState();
-}
-
-class TextWindowState extends State<TextWindow> {
-  @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.title),
-      content: Text(widget.text),
+      title: Text(title),
+      content: Text(text),
       actions: [
         TextButton(
           onPressed: () {
@@ -30,7 +26,7 @@ class TextWindowState extends State<TextWindow> {
         ),
         TextButton(
           onPressed: () {
-            widget.submit!();
+            submit();
             Navigator.of(context).pop();
           },
           child: const Text('Подтвердить'),
