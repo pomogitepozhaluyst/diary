@@ -1,4 +1,4 @@
-import 'package:diary/lists/empty_task_list.dart';
+import 'package:diary/lists/empty_note_list.dart';
 import 'package:diary/lists/note.dart';
 import 'package:diary/lists/note_card.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +21,7 @@ class NotesList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return notes.isEmpty
-        ? const EmptyTaskList()
+        ? const EmptyNoteList()
         : Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5.0),
             child: ListView.builder(

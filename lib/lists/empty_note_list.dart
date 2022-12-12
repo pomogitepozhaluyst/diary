@@ -2,8 +2,8 @@ import 'package:diary/lists/resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class EmptyTaskList extends StatelessWidget {
-  const EmptyTaskList({
+class EmptyNoteList extends StatelessWidget {
+  const EmptyNoteList({
     super.key,
   });
 
