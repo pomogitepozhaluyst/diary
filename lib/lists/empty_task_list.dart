@@ -2,8 +2,8 @@ import 'package:diary/lists/resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class EmptyList extends StatelessWidget {
-  const EmptyList({
+class EmptyTaskList extends StatelessWidget {
+  const EmptyTaskList({
     super.key,
   });
 
@@ -17,10 +17,10 @@ class EmptyList extends StatelessWidget {
             alignment: AlignmentDirectional.center,
             children: [
               SvgPicture.asset(
-                Resources.backgroundEmptyList1,
+                Resources.todolistBackground,
               ),
               SvgPicture.asset(
-                Resources.backgroundEmptyList2,
+                Resources.todolist,
               ),
             ],
           ),

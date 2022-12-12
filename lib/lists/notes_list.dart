@@ -1,20 +1,18 @@
-import 'package:diary/lists/empty_list_view.dart';
+import 'package:diary/lists/empty_task_list.dart';
 import 'package:diary/lists/note.dart';
-import 'package:diary/lists/note_card_view.dart';
+import 'package:diary/lists/note_card.dart';
 import 'package:flutter/material.dart';
 
-class ListNotes extends StatelessWidget {
-  final void Function(Note) setFavorite;
-  final void Function(Note) setCompleted;
+class NotesList extends StatelessWidget {
+  final void Function(String) setFavorite;
+  final void Function(String) setCompleted;
   final void Function(Note) dismissCard;
 
   final List<Note> notes;
-  final List<Note> showNotes;
 
-  const ListNotes({
+  const NotesList({
     super.key,
     required this.notes,
-    required this.showNotes,
     required this.setFavorite,
     required this.dismissCard,
     required this.setCompleted,
@@ -22,16 +20,15 @@ class ListNotes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return showNotes.isEmpty
-        ? const EmptyList()
+    return notes.isEmpty
+        ? const EmptyTaskList()
         : Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5.0),
             child: ListView.builder(
-              itemCount: showNotes.length,
+              itemCount: notes.length,
               itemBuilder: (BuildContext context, int index) {
-                return NoteCardView(
-                  thisNote: showNotes[index],
-                  notes: notes,
+                return NoteCard(
+                  note: notes[index],
                   setCompleted: setCompleted,
                   setFavorite: setFavorite,
                   dismissCard: dismissCard,

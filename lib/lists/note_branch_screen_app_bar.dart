@@ -1,8 +1,8 @@
+import 'package:diary/lists/data_popup_menu_item.dart';
 import 'package:diary/lists/pop_up_item_data.dart';
-import 'package:diary/lists/pop_up_menu.dart';
 import 'package:flutter/material.dart';
 
-class AppBarView extends StatelessWidget implements PreferredSizeWidget {
+class NoteBranchScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
   final void Function() deleteCompleted;
   final void Function() hideCompleted;
   final void Function() onlyFavorites;
@@ -13,7 +13,7 @@ class AppBarView extends StatelessWidget implements PreferredSizeWidget {
 
   final String branchTitle;
 
-  const AppBarView({
+  const NoteBranchScreenAppBar({
     super.key,
     required this.deleteCompleted,
     required this.hideCompleted,
@@ -37,28 +37,28 @@ class AppBarView extends StatelessWidget implements PreferredSizeWidget {
         PopupMenuButton<PopupMenuItemData>(
           onSelected: (item) => item.onClicked(),
           itemBuilder: (context) => [
-            PopUp(
+            DataPopupMenuItem(
               data: PopupMenuItemData(
                 title: isCompletedHidden ? 'Показать выполненные' : 'Скрыть выполненные',
                 icon: isCompletedHidden ? Icons.check_circle_outline : Icons.check_circle,
                 onClicked: hideCompleted,
               ),
             ),
-            PopUp(
+            DataPopupMenuItem(
               data: PopupMenuItemData(
                 title: isOnlyFavoriteShown ? 'Все задачи' : 'Только Избранные',
                 icon: isOnlyFavoriteShown ? Icons.star_outline : Icons.star,
                 onClicked: onlyFavorites,
               ),
             ),
-            PopUp(
+            DataPopupMenuItem(
               data: PopupMenuItemData(
                 title: 'Удалить выполненные',
                 icon: Icons.delete_outline,
                 onClicked: deleteCompleted,
               ),
             ),
-            PopUp(
+            DataPopupMenuItem(
               data: PopupMenuItemData(
                 title: 'Редактировать ветку',
                 icon: Icons.edit_outlined,

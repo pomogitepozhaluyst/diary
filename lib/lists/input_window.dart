@@ -4,15 +4,15 @@ import 'package:flutter/services.dart';
 class InputWindow extends StatefulWidget {
   final String hintText;
   final String title;
-  final String startInput;
-  final Function(String) submit;
+  final String initialInput;
+  final void Function(String) onSubmit;
 
   const InputWindow({
     super.key,
     required this.title,
     required this.hintText,
-    required this.submit,
-    this.startInput = '',
+    required this.onSubmit,
+    this.initialInput = '',
   });
 
   @override
@@ -22,20 +22,20 @@ class InputWindow extends StatefulWidget {
 class InputWindowState extends State<InputWindow> {
   String? errorMessage;
   late String stringFromInputField;
-  late TextEditingController controller;
+  late final TextEditingController controller;
 
   @override
   void initState() {
     super.initState();
-    stringFromInputField = widget.startInput;
+    stringFromInputField = widget.initialInput;
     controller = TextEditingController();
     controller.text = stringFromInputField;
   }
 
   @override
   void dispose() {
-    super.dispose();
     controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -43,9 +43,7 @@ class InputWindowState extends State<InputWindow> {
     return AlertDialog(
       title: Text(widget.title),
       content: TextField(
-        onChanged: (String value) {
-          stringFromInputField = value;
-        },
+        onChanged: (value) => stringFromInputField = value,
         controller: controller,
         maxLength: 40,
         maxLengthEnforcement: MaxLengthEnforcement.none,
@@ -69,15 +67,13 @@ class InputWindowState extends State<InputWindow> {
               setState(() {
                 errorMessage = 'Название не может быть пустым';
               });
-            } else if (stringFromInputField.length <= 40) {
-              Navigator.of(context).pop();
-              errorMessage = null;
-              widget.submit(stringFromInputField);
-              stringFromInputField = '';
-            } else {
+            } else if (stringFromInputField.length >= 40) {
               setState(() {
                 errorMessage = 'Слишком длинное название';
               });
+            } else {
+              Navigator.of(context).pop();
+              widget.onSubmit(stringFromInputField);
             }
           },
           child: const Text('Ок'),

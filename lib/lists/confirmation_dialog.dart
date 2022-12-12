@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 
-class TextWindow extends StatelessWidget {
+class ConfirmationDialog extends StatelessWidget {
   final String title;
   final String text;
-  final Function() submit;
 
-  const TextWindow({
+  const ConfirmationDialog({
     super.key,
     required this.title,
     required this.text,
-    required this.submit,
   });
 
   @override
@@ -20,15 +18,12 @@ class TextWindow extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.of(context).pop(false);
           },
           child: const Text('Отмена'),
         ),
         TextButton(
-          onPressed: () {
-            submit();
-            Navigator.of(context).pop();
-          },
+          onPressed: () => Navigator.of(context).pop(true),
           child: const Text('Подтвердить'),
         ),
       ],

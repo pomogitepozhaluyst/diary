@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class PopupMenuItemData {
   final IconData icon;
   final String title;
-  final Function onClicked;
+  final VoidCallback onClicked;
 
   const PopupMenuItemData({
     required this.icon,

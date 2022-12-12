@@ -1,53 +1,52 @@
-import 'package:diary/lists/app_bar.dart';
+import 'package:diary/lists/confirmation_dialog.dart';
 import 'package:diary/lists/input_window.dart';
-import 'package:diary/lists/list_notes.dart';
 import 'package:diary/lists/note.dart';
-import 'package:diary/lists/text_window.dart';
+import 'package:diary/lists/note_branch_screen_app_bar.dart';
+import 'package:diary/lists/notes_list.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
-class TaskBranchScreen extends StatefulWidget {
-  const TaskBranchScreen({super.key});
+class NoteBranchScreen extends StatefulWidget {
+  const NoteBranchScreen({super.key});
 
   @override
-  TaskBranchScreenState createState() => TaskBranchScreenState();
+  NoteBranchScreenState createState() => NoteBranchScreenState();
 }
 
-class TaskBranchScreenState extends State<TaskBranchScreen> {
-  late List<Note> notes;
-  late List<Note> showNotes;
+class NoteBranchScreenState extends State<NoteBranchScreen> {
+  late List<Note> _notes;
+  late List<Note> _shownNotes;
 
-  late bool isOnlyFavoriteShown;
-  late bool isCompletedHidden;
+  late bool _isOnlyFavoriteShown;
+  late bool _isCompletedHidden;
 
-  late String branchTitle;
+  late String _branchTitle;
 
   @override
   void initState() {
     super.initState();
-    branchTitle = "Учеба";
-    isOnlyFavoriteShown = false;
-    isCompletedHidden = false;
-    notes = [];
-    showNotes = [];
+    _branchTitle = "Учеба";
+    _isOnlyFavoriteShown = false;
+    _isCompletedHidden = false;
+    _notes = [];
+    _shownNotes = [];
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.deepPurple,
-      appBar: AppBarView(
-        isOnlyFavoriteShown: isOnlyFavoriteShown,
-        isCompletedHidden: isCompletedHidden,
-        branchTitle: branchTitle,
+      appBar: NoteBranchScreenAppBar(
+        isOnlyFavoriteShown: _isOnlyFavoriteShown,
+        isCompletedHidden: _isCompletedHidden,
+        branchTitle: _branchTitle,
         deleteCompleted: _showDeleteCompletedConfirmationDialog,
         hideCompleted: _hideCompleted,
         onlyFavorites: _onlyFavorites,
         editMainTitle: _editBranchTitle,
       ),
-      body: ListNotes(
-        notes: notes,
-        showNotes: showNotes,
+      body: NotesList(
+        notes: _shownNotes,
         setCompleted: _setCompleted,
         setFavorite: _setFavorite,
         dismissCard: _dismissCard,
@@ -73,14 +72,14 @@ class TaskBranchScreenState extends State<TaskBranchScreen> {
         return InputWindow(
           title: 'Создать задачу',
           hintText: 'Введите название задачи',
-          submit: _submitAddNote,
+          onSubmit: _addNote,
         );
       },
     );
   }
 
-  void _submitAddNote(String nameNote) {
-    notes.add(
+  void _addNote(String nameNote) {
+    _notes.add(
       Note(
         title: nameNote,
         isFavorite: false,
@@ -92,30 +91,30 @@ class TaskBranchScreenState extends State<TaskBranchScreen> {
   }
 
   void _hideCompleted() {
-    isCompletedHidden = !isCompletedHidden;
+    _isCompletedHidden = !_isCompletedHidden;
     _updateDisplayListByConditions();
   }
 
   void _onlyFavorites() {
-    isOnlyFavoriteShown = !isOnlyFavoriteShown;
+    _isOnlyFavoriteShown = !_isOnlyFavoriteShown;
     _updateDisplayListByConditions();
   }
 
   void _deleteCompleted() {
-    notes.removeWhere((note) => note.isCompleted);
+    _notes.removeWhere((note) => note.isCompleted);
     _updateDisplayListByConditions();
   }
 
   void _updateDisplayListByConditions() {
-    showNotes = notes;
     setState(() {
-      if (isOnlyFavoriteShown && isCompletedHidden) {
-        showNotes = showNotes.where((element) => (element.isFavorite && !element.isCompleted)).toList();
-      } else if (isOnlyFavoriteShown) {
-        showNotes = showNotes.where((element) => element.isFavorite).toList();
-      } else if (isCompletedHidden) {
-        showNotes = showNotes.where((element) => !element.isCompleted).toList();
+      Iterable<Note> shownNotesIterable = _notes;
+      if (_isOnlyFavoriteShown) {
+        shownNotesIterable = shownNotesIterable.where((note) => note.isFavorite).toList();
       }
+      if (_isCompletedHidden) {
+        shownNotesIterable = shownNotesIterable.where((note) => !note.isCompleted).toList();
+      }
+      _shownNotes = shownNotesIterable.toList();
     });
   }
 
@@ -126,44 +125,47 @@ class TaskBranchScreenState extends State<TaskBranchScreen> {
         return InputWindow(
           title: 'Редактировать ветку',
           hintText: 'Введите название ветки',
-          submit: _submitEditBranchTitle,
-          startInput: branchTitle,
+          onSubmit: _setBranchTitle,
+          initialInput: _branchTitle,
         );
       },
     );
   }
 
-  void _submitEditBranchTitle(String newMainTitle) {
+  void _setBranchTitle(String newMainTitle) {
     setState(() {
-      branchTitle = newMainTitle;
+      _branchTitle = newMainTitle;
     });
   }
 
-  void _showDeleteCompletedConfirmationDialog() {
-    showDialog(
+  Future<void> _showDeleteCompletedConfirmationDialog() async {
+    if (await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return TextWindow(
+        return const ConfirmationDialog(
           title: 'Подтвердите удаление',
           text: 'Удалить выполненные задачи? Это действие необратимо.',
-          submit: _deleteCompleted,
         );
       },
-    );
+    )) {
+      _deleteCompleted();
+    }
   }
 
-  void _setFavorite(Note thisNote) {
-    thisNote.isFavorite = !thisNote.isFavorite;
+  void _setFavorite(String id) {
+    final index = _notes.indexWhere((note) => note.id == id);
+    _notes[index] = _notes[index].copyWith(isFavorite: !_notes[index].isFavorite);
     _updateDisplayListByConditions();
   }
 
-  void _setCompleted(Note thisNote) {
-    thisNote.isCompleted = !thisNote.isCompleted;
+  void _setCompleted(String id) {
+    final index = _notes.indexWhere((note) => note.id == id);
+    _notes[index] = _notes[index].copyWith(isCompleted: !_notes[index].isCompleted);
     _updateDisplayListByConditions();
   }
 
   void _dismissCard(Note thisNote) {
-    notes.removeWhere((element) => element.id == thisNote.id);
+    _notes.removeWhere((element) => element.id == thisNote.id);
     _updateDisplayListByConditions();
   }
 }

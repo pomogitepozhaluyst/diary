@@ -1,10 +1,10 @@
-import 'package:diary/lists/task_branch.dart';
+import 'package:diary/lists/note_branch_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
   runApp(
     const MaterialApp(
-      home: TaskBranchScreen(),
+      home: NoteBranchScreen(),
     ),
   );
 }

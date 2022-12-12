@@ -1,10 +1,10 @@
 import 'package:diary/lists/pop_up_item_data.dart';
 import 'package:flutter/material.dart';
 
-class PopUp extends PopupMenuItem<PopupMenuItemData> {
+class DataPopupMenuItem extends PopupMenuItem<PopupMenuItemData> {
   final PopupMenuItemData data;
 
-  PopUp({super.key, required this.data})
+  DataPopupMenuItem({super.key, required this.data})
       : super(
           value: data,
           child: Row(
