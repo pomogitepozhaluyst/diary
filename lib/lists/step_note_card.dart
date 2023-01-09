@@ -44,7 +44,10 @@ class StepNoteCardState extends State<StepNoteCard> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.only(
+        bottom: 10.0,
+        top: 5.0,
+      ),
       child: Row(
         key: Key(stepNote.id),
         children: [
@@ -66,17 +69,14 @@ class StepNoteCardState extends State<StepNoteCard> {
                 hintText: 'Введите шаг',
                 border: InputBorder.none,
               ),
-              style: TextStyle(
-                  decoration: (stepNote.isCompleted && stringFromInputField.isNotEmpty)
-                      ? TextDecoration.lineThrough
-                      : TextDecoration.none),
+              style: TextStyle(decoration: (stepNote.isCompleted) ? TextDecoration.lineThrough : TextDecoration.none),
               textInputAction: TextInputAction.none,
               maxLines: null,
               onChanged: (value) {
-                  stringFromInputField = value;
-                  widget.changeTitleStepNote(widget.stepNote.copyWith(title: stringFromInputField));
+                stringFromInputField = value;
+                widget.changeTitleStepNote(widget.stepNote.copyWith(title: stringFromInputField));
               },
-            ), //stepNote.title),
+            ),
           ),
           InkWell(
             onTap: () {

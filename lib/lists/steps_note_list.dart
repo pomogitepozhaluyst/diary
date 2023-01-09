@@ -1,7 +1,6 @@
 import 'package:diary/lists/note.dart';
 import 'package:diary/lists/step_note.dart';
 import 'package:diary/lists/step_note_card.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class StepsNoteList extends StatefulWidget {
@@ -56,7 +55,7 @@ class StepsNoteListState extends State<StepsNoteList> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 30, top: 10, bottom: 10),
+              padding: const EdgeInsets.only(left: 30, top: 10),
               child: Align(
                 alignment: Alignment.topLeft,
                 child: Text('Создано: ${note.dateOfCreation}'),
