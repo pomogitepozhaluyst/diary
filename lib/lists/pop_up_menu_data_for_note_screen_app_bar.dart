@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
-class PopupMenuItemData {
+class PopupMenuItemDataForNoteScreenAppBar {
   final IconData icon;
   final String title;
-  final VoidCallback onClicked;
-  const PopupMenuItemData({
+  final Function(String) onClicked;
+
+  const PopupMenuItemDataForNoteScreenAppBar({
     required this.icon,
     required this.title,
     required this.onClicked,
