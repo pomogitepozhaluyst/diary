@@ -9,30 +9,18 @@ class AdditionalActionsInNoteScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20),
-      child: Material(
-        color: Colors.white,
-        borderRadius: const BorderRadius.all(Radius.circular(12)),
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: InkWell(
-                onTap: () {},
-                child: Row(
-                  children: const [
-                    Icon(
-                      Icons.notifications_active_outlined,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 15),
-                      child: Text(
-                        'Напомнить',
-                        style: TextStyle(fontSize: 17),
-                      ),
-                    ),
-                  ],
-                ),
+            _buildItem(
+              icon: const Icon(
+                Icons.notifications_active_outlined,
               ),
+              title: 'Напомнить',
+              onTap: () {},
             ),
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 15),
@@ -42,24 +30,33 @@ class AdditionalActionsInNoteScreen extends StatelessWidget {
                 ),
               ),
             ),
+            _buildItem(
+              icon: const Icon(
+                Icons.date_range,
+              ),
+              title: 'Добавить дату выполнения',
+              onTap: () {},
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildItem({required Icon icon, required String title, required VoidCallback onTap}) {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: InkWell(
+        onTap: onTap,
+        child: Row(
+          children: [
+            icon,
             Padding(
-              padding: const EdgeInsets.all(20),
-              child: InkWell(
-                onTap: () {},
-                child: Row(
-                  children: const [
-                    Icon(
-                      Icons.date_range,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 15),
-                      child: Text(
-                        'Добавить дату выполнения',
-                        style: TextStyle(fontSize: 17),
-                      ),
-                    ),
-                  ],
-                ),
+              padding: const EdgeInsets.only(left: 15),
+              child: Text(
+                title,
+                //'Напомнить',
+                style: const TextStyle(fontSize: 17),
               ),
             ),
           ],

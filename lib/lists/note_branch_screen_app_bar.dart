@@ -36,7 +36,9 @@ class NoteBranchScreenAppBar extends StatelessWidget implements PreferredSizeWid
       backgroundColor: ColorsScreens.appBarColor,
       actions: [
         PopupMenuButton<PopupMenuItemData>(
-          onSelected: (item) => {item.onClicked()},
+          onSelected: (item) {
+            item.onClicked();
+          },
           itemBuilder: (context) => [
             DataPopupMenuItem(
               data: PopupMenuItemData(

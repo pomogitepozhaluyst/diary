@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class PicturesInNoteScreen extends StatelessWidget {
@@ -9,7 +11,7 @@ class PicturesInNoteScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 15),
-      child: Material(
+      child: Card(
         color: Colors.white,
         child: Row(
           children: [
@@ -24,7 +26,7 @@ class PicturesInNoteScreen extends StatelessWidget {
                     height: 100,
                     width: 60,
                     child: Transform.rotate(
-                      angle: 3.14 / 2,
+                      angle: pi / 2,
                       child: const Icon(
                         Icons.attach_file,
                         size: 30,

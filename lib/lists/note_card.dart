@@ -6,12 +6,12 @@ class NoteCard extends StatelessWidget {
   final void Function(String, bool) setFavorite;
   final void Function(String) setCompleted;
   final void Function(Note) dismissCard;
-  final void Function(Note) goToNextScreen;
+  final void Function(Note) onTap;
 
   const NoteCard({
     super.key,
     required this.note,
-    required this.goToNextScreen,
+    required this.onTap,
     required this.setCompleted,
     required this.setFavorite,
     required this.dismissCard,
@@ -60,7 +60,7 @@ class NoteCard extends StatelessWidget {
               flex: 6,
               child: InkWell(
                 onTap: () {
-                  goToNextScreen(note);
+                  onTap(note);
                 },
                 child: Align(
                   alignment: Alignment.bottomLeft,
@@ -77,7 +77,7 @@ class NoteCard extends StatelessWidget {
                             Align(
                               alignment: Alignment.centerLeft,
                               child: Text(
-                                '${note.stepsNote.where((iteratorStepsNote) => iteratorStepsNote.isCompleted).length} из ${note.stepsNote.length}',
+                                note.countCompletedAndNotCompleted,
                                 style: const TextStyle(color: Colors.black45, fontSize: 13),
                               ),
                             ),

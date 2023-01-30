@@ -1,13 +1,13 @@
 import 'package:diary/lists/note.dart';
-import 'package:diary/lists/step_note.dart';
+import 'package:diary/lists/note_step.dart';
 import 'package:flutter/material.dart';
 
 class StepNoteCard extends StatefulWidget {
   final Note note;
-  final StepNote stepNote;
-  final void Function(StepNote) changeTitleStepNote;
-  final Future<void> Function(StepNote) setCompleted;
-  final void Function(StepNote) deleteCard;
+  final NoteStep stepNote;
+  final void Function(NoteStep) changeTitleStepNote;
+  final Future<void> Function(NoteStep) setCompleted;
+  final void Function(NoteStep) deleteCard;
 
   const StepNoteCard({
     super.key,
@@ -25,12 +25,21 @@ class StepNoteCard extends StatefulWidget {
 class StepNoteCardState extends State<StepNoteCard> {
   late String stringFromInputField;
   late final TextEditingController controller;
-  late StepNote stepNote;
+  late NoteStep stepNote;
   @override
   void initState() {
     super.initState();
     stringFromInputField = widget.stepNote.title;
     controller = TextEditingController();
+    controller.text = stringFromInputField;
+    stepNote = widget.stepNote;
+  }
+
+  @override
+  void didUpdateWidget(StepNoteCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    stringFromInputField = widget.stepNote.title;
+    //controller = TextEditingController();
     controller.text = stringFromInputField;
     stepNote = widget.stepNote;
   }
@@ -46,7 +55,7 @@ class StepNoteCardState extends State<StepNoteCard> {
     return Padding(
       padding: const EdgeInsets.only(
         bottom: 10.0,
-        top: 5.0,
+        right: 10,
       ),
       child: Row(
         key: Key(stepNote.id),

@@ -1,4 +1,5 @@
 import 'package:diary/lists/note.dart';
+import 'package:diary/lists/resultDialogEditNote.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -36,6 +37,12 @@ class InputWindowEditNoteState extends State<InputWindowEditNote> {
     stringFromInputField = widget.initialInput;
     controller = TextEditingController();
     controller.text = stringFromInputField;
+    isFavorite = widget.note.isFavorite;
+  }
+
+  @override
+  void didUpdateWidget(InputWindowEditNote oldWidget) {
+    super.didUpdateWidget(oldWidget);
     isFavorite = widget.note.isFavorite;
   }
 
@@ -80,8 +87,10 @@ class InputWindowEditNoteState extends State<InputWindowEditNote> {
       actions: [
         TextButton(
           onPressed: () {
-            List<dynamic> returnValue = [widget.note.title, widget.note.isFavorite];
-            Navigator.of(context).pop(returnValue);
+            ResultDialogEditNote resultDialog =
+                ResultDialogEditNote(title: widget.note.title, isFavorite: widget.note.isFavorite);
+
+            Navigator.of(context).pop(resultDialog);
           },
           child: const Text('Отмена'),
         ),
@@ -96,8 +105,9 @@ class InputWindowEditNoteState extends State<InputWindowEditNote> {
                 errorMessage = 'Слишком длинное название';
               });
             } else {
-              List<dynamic> returnValue = [stringFromInputField, isFavorite];
-              Navigator.of(context).pop(returnValue);
+              ResultDialogEditNote resultDialog =
+                  ResultDialogEditNote(title: stringFromInputField, isFavorite: isFavorite);
+              Navigator.of(context).pop(resultDialog);
 
               widget.onSubmit(stringFromInputField);
               widget.onSetFavorite(widget.note.id, isFavorite);

@@ -34,7 +34,7 @@ class NotesList extends StatelessWidget {
                   setCompleted: setCompleted,
                   setFavorite: setFavorite,
                   dismissCard: dismissCard,
-                  goToNextScreen: goToNextScreen,
+                  onTap: goToNextScreen,
                 );
               },
             ),

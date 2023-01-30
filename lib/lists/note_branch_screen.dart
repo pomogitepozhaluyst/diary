@@ -5,8 +5,9 @@ import 'package:diary/lists/input_window_edit_step_note.dart';
 import 'package:diary/lists/note.dart';
 import 'package:diary/lists/note_branch_screen_app_bar.dart';
 import 'package:diary/lists/note_screen.dart';
+import 'package:diary/lists/note_step.dart';
 import 'package:diary/lists/notes_list.dart';
-import 'package:diary/lists/step_note.dart';
+import 'package:diary/lists/resultDialogEditNote.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
@@ -91,7 +92,6 @@ class NoteBranchScreenState extends State<NoteBranchScreen> {
         isFavorite: false,
         isCompleted: false,
         id: const Uuid().v4(),
-        stepsNote: [],
         dateOfCreation: DateFormat('dd.MM.yyyy HH:mm').format(DateTime.now().toLocal()),
       ),
     );
@@ -147,15 +147,17 @@ class NoteBranchScreenState extends State<NoteBranchScreen> {
   }
 
   Future<void> _showDeleteCompletedNotesConfirmationDialog() async {
-    if (await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return const ConfirmationDialog(
-          title: 'Подтвердите удаление',
-          text: 'Удалить выполненные задачи? Это действие необратимо.',
-        );
-      },
-    )) {
+    bool getValue = await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const ConfirmationDialog(
+              title: 'Подтвердите удаление',
+              text: 'Удалить выполненные задачи? Это действие необратимо.',
+            );
+          },
+        ) ??
+        false;
+    if (getValue) {
       _deleteCompletedNotes();
     }
   }
@@ -167,24 +169,16 @@ class NoteBranchScreenState extends State<NoteBranchScreen> {
   }
 
   void addStepNote(Note note) {
-    note.stepsNote.add(
-      StepNote(
-        title: '',
-        isCompleted: false,
-        id: const Uuid().v4(),
-      ),
-    );
+    final index = _notes.indexWhere((element) => element.id == note.id);
+    _notes[index] = note;
     _updateDisplayListByConditions();
   }
 
-  bool getStatusFavoriteNote(String id) {
-    return _notes.where((note) => note.id == id).toList()[0].isFavorite;
-  }
-
-  void _setCompletedNote(String id) {
+  Note _setCompletedNote(String id) {
     final index = _notes.indexWhere((note) => note.id == id);
     _notes[index] = _notes[index].copyWith(isCompleted: !_notes[index].isCompleted);
     _updateDisplayListByConditions();
+    return _notes[index];
   }
 
   void _dismissCard(Note thisNote) {
@@ -197,87 +191,103 @@ class NoteBranchScreenState extends State<NoteBranchScreen> {
       builder: (_) => NoteScreen(
         note: note,
         setCompletedNote: _setCompletedNote,
-        getStatusFavorite: getStatusFavoriteNote,
         deleteStepsNoteCompleted: _deleteStepsCompleted,
         deleteNote: _deleteNote,
         editNote: _editNote,
-        setCompletedStepNote: _setCompletedStepNote,
+        setCompletedStepNote: _setCompletedNoteStep,
         addStepNote: addStepNote,
-        deleteStepNote: _deleteStepNote,
+        deleteStepNote: _deleteNoteStep,
         changeNoteNotice: _changeNoteNotice,
+        changeTitleStepNote: _changeTitleNoteStep,
       ),
     ));
   }
 
-  void _deleteStepNote(Note note, StepNote stepNote) {
-    setState(() {
-      final indexNote = _notes.indexWhere((iteratorNote) => (iteratorNote.id == note.id));
+  void _deleteNoteStep(Note note, NoteStep stepNote) {
+    final indexNote = _notes.indexWhere((iteratorNote) => (iteratorNote.id == note.id));
 
-      _notes[indexNote].stepsNote.removeWhere((iteratorNote) => (iteratorNote.id == stepNote.id));
-    });
+    _notes[indexNote].stepsNote.removeWhere((iteratorNote) => (iteratorNote.id == stepNote.id));
+    _notes[indexNote] = _notes[indexNote].copyWith(
+      countCompletedAndNotCompleted:
+          '${note.stepsNote.where((iteratorStepsNote) => iteratorStepsNote.isCompleted).length} из ${note.stepsNote.length}',
+    );
+    _updateDisplayListByConditions();
   }
 
   void _deleteNote(Note note) {
     _notes.removeWhere((iteratorNote) => (note.id == iteratorNote.id));
-    Navigator.of(context).pop();
     _updateDisplayListByConditions();
   }
 
-  Future<List<dynamic>> _editNote(Note note) async {
-    return await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return InputWindowEditNote(
-            title: 'Редактировать задачу',
-            hintText: 'Введите название задачу',
-            onSubmit: (String title) {
-              setState(() {
-                final index = _notes.indexWhere((iteratorNote) => iteratorNote.id == note.id);
+  Future<ResultDialogEditNote> _editNote(Note note) async {
+    ResultDialogEditNote resultDialog = await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return InputWindowEditNote(
+                title: 'Редактировать задачу',
+                hintText: 'Введите название задачи',
+                onSubmit: (String title) {
+                  setState(() {
+                    final index = _notes.indexWhere((iteratorNote) => iteratorNote.id == note.id);
 
-                _notes[index] =
-                    _notes.where((iteratorNote) => (iteratorNote.id == note.id)).toList()[0].copyWith(title: title);
-              });
-            },
-            onSetFavorite: _setFavoriteNote,
-            initialInput: note.title,
-            note: note);
-      },
-    );
+                    _notes[index] =
+                        _notes.where((iteratorNote) => (iteratorNote.id == note.id)).toList()[0].copyWith(title: title);
+                  });
+                },
+                onSetFavorite: _setFavoriteNote,
+                initialInput: note.title,
+                note: note);
+          },
+        ) ??
+        ResultDialogEditNote(isFavorite: false, title: note.title);
+    return resultDialog;
   }
 
   void _deleteStepsCompleted(Note note) {
-    setState(() {
-      _notes
-          .where((iteratorNote) => (iteratorNote.id == note.id))
-          .toList()[0]
-          .stepsNote
-          .removeWhere((iteratorNote) => (iteratorNote.isCompleted));
-    });
+    final indexNote = _notes.indexWhere((iteratorNote) => (iteratorNote.id == note.id));
+
+    _notes
+        .where((iteratorNote) => (iteratorNote.id == note.id))
+        .first
+        .stepsNote
+        .removeWhere((iteratorNote) => (iteratorNote.isCompleted));
+    _notes[indexNote] = _notes[indexNote].copyWith(
+      countCompletedAndNotCompleted:
+          '${note.stepsNote.where((iteratorStepsNote) => iteratorStepsNote.isCompleted).length} из ${note.stepsNote.length}',
+    );
+    _updateDisplayListByConditions();
   }
 
-  bool _setCompletedStepNote(Note note, StepNote stepNote) {
+  bool _setCompletedNoteStep(Note note, NoteStep stepNote) {
     final indexNote = _notes.indexWhere((iteratorNote) => iteratorNote.id == note.id);
 
     final indexStepNote =
         _notes[indexNote].stepsNote.indexWhere((iteratorStepNote) => iteratorStepNote.id == stepNote.id);
-    setState(() {
-      _notes[indexNote].stepsNote[indexStepNote] = _notes[indexNote]
-          .stepsNote[indexStepNote]
-          .copyWith(isCompleted: !_notes[indexNote].stepsNote[indexStepNote].isCompleted);
-    });
+    _notes[indexNote].stepsNote[indexStepNote] = _notes[indexNote]
+        .stepsNote[indexStepNote]
+        .copyWith(isCompleted: !_notes[indexNote].stepsNote[indexStepNote].isCompleted);
+    _notes[indexNote] = _notes[indexNote].copyWith(
+      countCompletedAndNotCompleted:
+          '${_notes[indexNote].stepsNote.where((iteratorStepsNote) => iteratorStepsNote.isCompleted).length} из ${note.stepsNote.length}',
+    );
+    _updateDisplayListByConditions();
 
-    if (_notes[indexNote].stepsNote.where((iteratorStepsNote) => iteratorStepsNote.isCompleted).length ==
+    return (_notes[indexNote].stepsNote.where((iteratorStepsNote) => iteratorStepsNote.isCompleted).length ==
             _notes[indexNote].stepsNote.length &&
-        !_notes[indexNote].isCompleted) {
-      return true;
-    } else {
-      return false;
-    }
+        !_notes[indexNote].isCompleted);
   }
 
   void _changeNoteNotice(Note note) {
     final index = _notes.indexWhere((iteratorNote) => iteratorNote.id == note.id);
     _notes[index] = note;
     _updateDisplayListByConditions();
+  }
+
+  void _changeTitleNoteStep(Note note, NoteStep stepNote) {
+    final indexNote = _notes.indexWhere((iteratorNote) => iteratorNote.id == note.id);
+    final indexStepNote = _notes[indexNote].stepsNote.indexWhere((note) => note.id == stepNote.id);
+
+    _notes[indexNote].stepsNote[indexStepNote] =
+        _notes[indexNote].stepsNote[indexStepNote].copyWith(title: stepNote.title);
   }
 }

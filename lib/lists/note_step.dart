@@ -1,16 +1,16 @@
-class StepNote {
+class NoteStep {
   final String id;
   final String title;
   final bool isCompleted;
 
-  const StepNote({
+  const NoteStep({
     required this.title,
     required this.isCompleted,
     required this.id,
   });
 
-  StepNote copyWith({String? id, bool? isCompleted, String? title}) {
-    return StepNote(
+  NoteStep copyWith({String? id, bool? isCompleted, String? title}) {
+    return NoteStep(
       id: id ?? this.id,
       title: title ?? this.title,
       isCompleted: isCompleted ?? this.isCompleted,

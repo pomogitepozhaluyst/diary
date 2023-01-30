@@ -1,4 +1,4 @@
-import 'package:diary/lists/step_note.dart';
+import 'package:diary/lists/note_step.dart';
 
 class Note {
   final String id;
@@ -7,7 +7,8 @@ class Note {
   final bool isCompleted;
   final String dateOfCreation;
   final String notice;
-  List<StepNote> stepsNote;
+  final List<NoteStep> stepsNote;
+  final String countCompletedAndNotCompleted;
 
   Note({
     required this.title,
@@ -15,8 +16,9 @@ class Note {
     required this.isCompleted,
     required this.id,
     required this.dateOfCreation,
+    this.countCompletedAndNotCompleted = '',
     this.notice = '',
-    required this.stepsNote,
+    this.stepsNote = const [],
   });
 
   Note copyWith({
@@ -24,10 +26,11 @@ class Note {
     bool? isFavorite,
     bool? isCompleted,
     String? title,
-    List<StepNote>? stepsNote,
-    List<StepNote>? shownStepsNote,
+    List<NoteStep>? stepsNote,
+    List<NoteStep>? shownStepsNote,
     String? dateOfCreation,
     String? notice,
+    String? countCompletedAndNotCompleted,
   }) {
     return Note(
       id: id ?? this.id,
@@ -37,6 +40,7 @@ class Note {
       dateOfCreation: dateOfCreation ?? this.dateOfCreation,
       stepsNote: stepsNote ?? this.stepsNote,
       notice: notice ?? this.notice,
+      countCompletedAndNotCompleted: countCompletedAndNotCompleted ?? this.countCompletedAndNotCompleted,
     );
   }
 }
