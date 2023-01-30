@@ -1,3 +1,4 @@
+import 'package:diary/lists/colors_all_screens.dart';
 import 'package:diary/lists/data_popup_menu_item.dart';
 import 'package:diary/lists/pop_up_item_data.dart';
 import 'package:flutter/material.dart';
@@ -32,10 +33,12 @@ class NoteBranchScreenAppBar extends StatelessWidget implements PreferredSizeWid
     return AppBar(
       title: Text(branchTitle),
       centerTitle: true,
-      backgroundColor: Colors.deepOrange,
+      backgroundColor: ColorsScreens.appBarColor,
       actions: [
         PopupMenuButton<PopupMenuItemData>(
-          onSelected: (item) => item.onClicked(),
+          onSelected: (item) {
+            item.onClicked();
+          },
           itemBuilder: (context) => [
             DataPopupMenuItem(
               data: PopupMenuItemData(

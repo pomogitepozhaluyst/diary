@@ -4,9 +4,10 @@ import 'package:diary/lists/note_card.dart';
 import 'package:flutter/material.dart';
 
 class NotesList extends StatelessWidget {
-  final void Function(String) setFavorite;
+  final void Function(String, bool) setFavorite;
   final void Function(String) setCompleted;
   final void Function(Note) dismissCard;
+  final void Function(Note) goToNextScreen;
 
   final List<Note> notes;
 
@@ -16,6 +17,7 @@ class NotesList extends StatelessWidget {
     required this.setFavorite,
     required this.dismissCard,
     required this.setCompleted,
+    required this.goToNextScreen,
   });
 
   @override
@@ -32,6 +34,7 @@ class NotesList extends StatelessWidget {
                   setCompleted: setCompleted,
                   setFavorite: setFavorite,
                   dismissCard: dismissCard,
+                  onTap: goToNextScreen,
                 );
               },
             ),

@@ -67,7 +67,7 @@ class InputWindowState extends State<InputWindow> {
               setState(() {
                 errorMessage = 'Название не может быть пустым';
               });
-            } else if (stringFromInputField.length >= 40) {
+            } else if (stringFromInputField.length > 40) {
               setState(() {
                 errorMessage = 'Слишком длинное название';
               });

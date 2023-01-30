@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 
 class NoteCard extends StatelessWidget {
   final Note note;
-  final void Function(String) setFavorite;
+  final void Function(String, bool) setFavorite;
   final void Function(String) setCompleted;
   final void Function(Note) dismissCard;
+  final void Function(Note) onTap;
 
   const NoteCard({
     super.key,
     required this.note,
+    required this.onTap,
     required this.setCompleted,
     required this.setFavorite,
     required this.dismissCard,
@@ -56,11 +58,44 @@ class NoteCard extends StatelessWidget {
             ),
             Expanded(
               flex: 6,
-              child: Text(note.title),
+              child: InkWell(
+                onTap: () {
+                  onTap(note);
+                },
+                child: Align(
+                  alignment: Alignment.bottomLeft,
+                  child: note.stepsNote.isNotEmpty
+                      ? Column(
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                note.title,
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                note.countCompletedAndNotCompleted,
+                                style: const TextStyle(color: Colors.black45, fontSize: 13),
+                              ),
+                            ),
+                          ],
+                        )
+                      : Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            note.title,
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                        ),
+                ),
+              ),
             ),
             IconButton(
               icon: Icon(note.isFavorite ? Icons.star : Icons.star_border, color: Colors.yellow),
-              onPressed: () => setFavorite(note.id),
+              onPressed: () => setFavorite(note.id, !note.isFavorite),
             )
           ],
         ),
